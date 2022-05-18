@@ -5,11 +5,10 @@ This module contains functions that generate snakemake templates for output file
 __author__ = "Nikolai Romashchenko"
 __license__ = "MIT"
 
-
 import os
 from typing import Union, Any, Dict, List
 import pewo.config as cfg
-from pewo.software import Software, PlacementSoftware, AlignmentSoftware
+from pewo.software import Software, PlacementSoftware, AlignmentSoftware, DamageSoftware
 from pewo.io import fasta
 
 
@@ -17,11 +16,13 @@ def _check_software(software: Any) -> None:
     """
     Assert wrapper for _is_supported().
     """
-    assert cfg.is_supported(software), str(software) + " is not valid placement software."
+    assert cfg.is_supported(
+        software), str(software) + " is not valid placement software."
 
 
-def get_software_dir(config: Dict,
-                     software: Union[PlacementSoftware, AlignmentSoftware]) -> str:
+def get_software_dir(
+    config: Dict, software: Union[PlacementSoftware, AlignmentSoftware,
+                                  DamageSoftware]) -> str:
     """
     Returns a working directory for given software.
     """
@@ -31,7 +32,8 @@ def get_software_dir(config: Dict,
     return os.path.join(work_dir, software.value.upper())
 
 
-def get_experiment_dir_template(config: Dict, software: PlacementSoftware, **kwargs) -> str:
+def get_experiment_dir_template(config: Dict, software: PlacementSoftware,
+                                **kwargs) -> str:
     """
     Returns a name template of a working directory path for an experiment.
     One experiment is conducted by given software with fixed specific
@@ -54,22 +56,33 @@ def get_experiment_dir_template(config: Dict, software: PlacementSoftware, **kwa
         assert heuristic and heuristic in valid_heuristics, f"{heuristic} is not a valid heuristic."
 
         if heuristic == "h1":
-            return os.path.join(software_dir, input_set_dir_template, "h1", "g{g}",
-                                get_common_queryname_template(config))
+            return os.path.join(software_dir, input_set_dir_template, "h1",
+                                "g{g}", get_common_queryname_template(config))
         elif heuristic == "h2":
-            return os.path.join(software_dir, input_set_dir_template, "h2", "bigg{bigg}",
+            return os.path.join(software_dir, input_set_dir_template, "h2",
+                                "bigg{bigg}",
                                 get_common_queryname_template(config))
         elif heuristic in ("h3", "h4"):
-            return os.path.join(software_dir, input_set_dir_template, heuristic,
+            return os.path.join(software_dir,
+                                input_set_dir_template, heuristic,
                                 get_common_queryname_template(config))
     elif software == PlacementSoftware.PPLACER:
-        return os.path.join(software_dir, input_set_dir_template, "ms{ms}_sb{sb}_mp{mp}")
+        return os.path.join(software_dir, input_set_dir_template,
+                            "ms{ms}_sb{sb}_mp{mp}")
     elif software == PlacementSoftware.APPLES:
-        return os.path.join(software_dir, input_set_dir_template, "meth{meth}_crit{crit}")
+        return os.path.join(software_dir, input_set_dir_template,
+                            "meth{meth}_crit{crit}")
     elif software == PlacementSoftware.RAPPAS:
-        return os.path.join(software_dir, input_set_dir_template, "red{red}_ar{ar}", "k{k}_o{o}")
+        return os.path.join(software_dir, input_set_dir_template,
+                            "red{red}_ar{ar}", "k{k}_o{o}")
     elif software == PlacementSoftware.APPSPAM:
-        return os.path.join(software_dir, input_set_dir_template, "mode{mode}_w{w}_pattern{pattern}")
+        return os.path.join(software_dir, input_set_dir_template,
+                            "mode{mode}_w{w}_pattern{pattern}")
+    elif software == DamageSoftware.PYGARGAMMEL:
+        return os.path.join(
+            software_dir, input_set_dir_template,
+            "nf{nick_frequency}_ol{overhang_length}_ds{double_deamination_rate}_ss{single_deamination_rate}"
+        )
 
 
 def get_experiment_log_dir_template(config: Dict, software: Software) -> str:
@@ -80,11 +93,13 @@ def get_experiment_log_dir_template(config: Dict, software: Software) -> str:
     """
     _check_software(software)
     software_name = software.value
-    return os.path.join(cfg.get_work_dir(config), "logs", software_name, "{pruning}")
+    return os.path.join(cfg.get_work_dir(config), "logs", software_name,
+                        "{pruning}")
 
 
 def get_name_prefix(config: Dict) -> str:
-    return "query" if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD else "pruning"
+    return "query" if cfg.get_mode(
+        config) == cfg.Mode.LIKELIHOOD else "pruning"
 
 
 def get_common_queryname_template(config: Dict) -> str:
@@ -126,7 +141,8 @@ def get_common_template_args(config: Dict) -> Dict[str, Any]:
         }
 
 
-def get_queryname_template(config: Dict, software: PlacementSoftware, **kwargs) -> str:
+def get_queryname_template(config: Dict, software: PlacementSoftware,
+                           **kwargs) -> str:
     """
     Each placement query has a template name based on two type of inputs:
     1) common arguments: tree and query sequences -- independent of software
@@ -159,12 +175,15 @@ def get_queryname_template(config: Dict, software: PlacementSoftware, **kwargs) 
     elif software == PlacementSoftware.APPLES:
         return get_common_queryname_template(config) + "_meth{meth}_crit{crit}"
     elif software == PlacementSoftware.RAPPAS:
-        return get_common_queryname_template(config) + "_k{k}_o{o}_red{red}_ar{ar}"
+        return get_common_queryname_template(
+            config) + "_k{k}_o{o}_red{red}_ar{ar}"
     elif software == PlacementSoftware.APPSPAM:
-        return get_common_queryname_template(config) + "_mode{mode}_w{w}_pattern{pattern}"
+        return get_common_queryname_template(
+            config) + "_mode{mode}_w{w}_pattern{pattern}"
 
 
-def get_output_template_args(config: Dict, software: PlacementSoftware, **kwargs) -> Dict[str, Any]:
+def get_output_template_args(config: Dict, software: PlacementSoftware,
+                             **kwargs) -> Dict[str, Any]:
     """
     Each placement query has a template name based on two type of inputs:
     1) common arguments: tree and query sequences -- independent of software
@@ -228,15 +247,17 @@ def get_output_filename_template(config: Dict, software: PlacementSoftware,
     _check_software(software)
 
     extension = "." + extension if extension[0] != "." else extension
-    return get_queryname_template(config, software, **kwargs) + "_" + software.value + extension
+    return get_queryname_template(config, software, **
+                                  kwargs) + "_" + software.value + extension
 
 
 def get_log_template(config: Dict, software: Software, **kwargs) -> str:
     """
     Creates a name template of .log output files produced by specific software.
     """
-    return os.path.join(get_experiment_log_dir_template(config, software),
-                        get_output_filename_template(config, software, "log", **kwargs))
+    return os.path.join(
+        get_experiment_log_dir_template(config, software),
+        get_output_filename_template(config, software, "log", **kwargs))
 
 
 def join_kwargs(**kwargs) -> str:
@@ -251,7 +272,8 @@ def get_benchmark_template(config: Dict, software: Software, **kwargs) -> str:
     """
     Creates a name template of .tsv output files produced by specific software.
     """
-    rule_name = kwargs.get("rule_name", "rule_name keyword argument must be provided")
+    rule_name = kwargs.get("rule_name",
+                           "rule_name keyword argument must be provided")
     assert rule_name
 
     template_args = kwargs.copy()
@@ -271,11 +293,13 @@ def get_benchmark_template(config: Dict, software: Software, **kwargs) -> str:
         assert heuristic and heuristic in valid_heuristics, f"{heuristic} is not a valid heuristic."
         software_name = software.name.lower() + f"-{heuristic}"
 
-    return os.path.join(cfg.get_work_dir(config), "benchmarks",
-                        filename_template + "_" + software_name + "-" + rule_name + "_benchmark.tsv")
+    return os.path.join(
+        cfg.get_work_dir(config), "benchmarks", filename_template + "_" +
+        software_name + "-" + rule_name + "_benchmark.tsv")
 
 
-def get_output_template(config: Dict, software: Union[PlacementSoftware, AlignmentSoftware],
+def get_output_template(config: Dict, software: Union[PlacementSoftware,
+                                                      AlignmentSoftware],
                         extension: str, **kwargs) -> str:
     """
     Creates a name template of .{extension} output files produced by specific software.
@@ -283,8 +307,9 @@ def get_output_template(config: Dict, software: Union[PlacementSoftware, Alignme
     directory of given software.
     """
     _check_software(software)
-    return os.path.join(get_experiment_dir_template(config, software, **kwargs),
-                        get_output_filename_template(config, software, extension, **kwargs))
+    return os.path.join(
+        get_experiment_dir_template(config, software, **kwargs),
+        get_output_filename_template(config, software, extension, **kwargs))
 
 
 def get_ar_output_templates(config: Dict, arsoft: str) -> List[str]:
@@ -294,7 +319,8 @@ def get_ar_output_templates(config: Dict, arsoft: str) -> List[str]:
 
     # FIXME: Make a software class for every AR software, and make output directories
     # for every AR software
-    output_dir = os.path.join(cfg.get_work_dir(config), "RAPPAS", "{pruning}", "red{red}_ar" + arsoft.upper(), "AR")
+    output_dir = os.path.join(cfg.get_work_dir(config), "RAPPAS", "{pruning}",
+                              "red{red}_ar" + arsoft.upper(), "AR")
 
     if arsoft == "PHYML":
         output_filenames = [
@@ -313,10 +339,10 @@ def get_ar_output_templates(config: Dict, arsoft: str) -> List[str]:
             "extended_align.phylip.raxml.rba"
         ]
     elif arsoft == "PAML":
-        output_filenames = [
-            "rst"
-        ]
+        output_filenames = ["rst"]
     else:
         raise RuntimeError(f"Unknown ancestral reconstruction soft: {arsoft}")
 
-    return [os.path.join(output_dir, filename) for filename in output_filenames]
+    return [
+        os.path.join(output_dir, filename) for filename in output_filenames
+    ]

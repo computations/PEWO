@@ -10,7 +10,7 @@ __license__ = "MIT"
 
 import os
 import pewo.config as cfg
-from pewo.software import PlacementSoftware, AlignmentSoftware
+from pewo.software import PlacementSoftware, AlignmentSoftware, DamageSoftware
 from pewo.templates import get_output_template, get_log_template, get_software_dir, \
     get_common_queryname_template, get_experiment_dir_template, get_benchmark_template, get_output_template_args
 
@@ -19,6 +19,8 @@ _epang_soft_dir = get_software_dir(config, PlacementSoftware.EPANG)
 
 # FIXME: Unnecessary dependendancy on the alignment software
 _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
+
+_damage_dir = get_software_dir(config, DamageSoftware.PYGARGAMMEL)
 
 _epang_h1_place_benchmark_template = get_benchmark_template(config, PlacementSoftware.EPANG,
                                                             p="pruning", length="length", g="g", heuristic="h1",
@@ -98,11 +100,12 @@ def _make_epang_command(**kwargs) -> str:
 
 
 def _get_epang_input_reads(config) -> str:
+    # return os.path.join(_working_dir, "A", "{pruning}" + ".align")
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_refs")
 
 
 def _get_epang_input_queries(config) -> str:
-    return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_queries")
+    return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
 
 
 def _get_epang_input_tree() -> str:

@@ -5,7 +5,6 @@ This module contains definitions of data structures for software supported in PE
 __author__ = "Nikolai Romashchenko"
 __license__ = "MIT"
 
-
 from enum import Enum
 from typing import Union, Dict
 
@@ -31,11 +30,16 @@ class AlignmentSoftware(Enum):
     HMMER = "hmmer"
 
 
+class DamageSoftware(Enum):
+    PYGARGAMMEL = "pygargammel"
+
+
 class CustomScripts(Enum):
     PSIBLAST_2_FASTA = "psiblast2fasta"
 
 
-Software = Union[PlacementSoftware, AlignmentSoftware, CustomScripts]
+Software = Union[PlacementSoftware, AlignmentSoftware, DamageSoftware,
+                 CustomScripts]
 
 
 def get_ar_binary(config: Dict, arsoft: str) -> str:
@@ -47,7 +51,7 @@ def get_ar_binary(config: Dict, arsoft: str) -> str:
         return "phyml"
     elif arsoft == "RAXMLNG":
         return "raxml-ng"
-    elif (arsoft == "PAML") and (config["states"]==0):
+    elif (arsoft == "PAML") and (config["states"] == 0):
         return "baseml"
-    elif (arsoft == "PAML") and (config["states"]==1):
+    elif (arsoft == "PAML") and (config["states"] == 1):
         return "codeml"

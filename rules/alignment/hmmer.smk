@@ -8,13 +8,14 @@ __license__ = "MIT"
 
 import os
 import pewo.config as cfg
-from pewo.software import AlignmentSoftware, CustomScripts
+from pewo.software import AlignmentSoftware, CustomScripts, DamageSoftware
 from pewo.templates import get_software_dir, get_experiment_log_dir_template, \
     get_common_queryname_template, get_benchmark_template, get_common_template_args
 
 
 _work_dir = cfg.get_work_dir(config)
 _alignment_dir = get_software_dir(config, AlignmentSoftware.HMMER)
+_damage_dir = get_software_dir(config, DamageSoftware.PYGARGAMMEL)
 
 
 _hmmer_benchmark_align_template = get_benchmark_template(config, AlignmentSoftware.HMMER,
@@ -106,12 +107,13 @@ rule split_alignment:
                             "R",
                              get_common_queryname_template(config) + ".fasta"),
     output:
-          os.path.join(_alignment_dir,
+          queries = os.path.join(_alignment_dir,
                        "{pruning}",
                         get_common_queryname_template(config) + ".fasta_queries"),
-          os.path.join(_alignment_dir,
+          refs = os.path.join(_alignment_dir,
                        "{pruning}",
                         get_common_queryname_template(config) + ".fasta_refs"),
     version: "1.0"
     shell:
-        "pewo/alignment/split_hmm_alignment.py {input.reads} {input.align}"
+        ("pewo/alignment/split_hmm_alignment.py {input.reads} "
+        "{input.align} {output.queries} {output.refs}")

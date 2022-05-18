@@ -49,6 +49,9 @@ include:
     "rules/placement/apples.smk"
 include:
     "rules/placement/appspam.smk"
+#damage software
+include:
+    "rules/damage/pygargammel.smk"
 #results evaluation and plots
 include:
     "rules/op/operate_nodedistance.smk"

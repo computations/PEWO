@@ -55,7 +55,7 @@ def get_rappas_input_reads(pruning):
         # FIXME:
         # This is a dependency on pewo.templates.get_common_queryname_template result.
         # Look for a decent way to get rid of it.
-        return [os.path.join(output_dir, pruning + "_r" + str(l) + ".fasta")
+        return [os.path.join(output_dir, pruning + "_r" + str(l) + "_damage.fasta")
                 for l in config["read_length"]]
 
 

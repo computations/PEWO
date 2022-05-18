@@ -6,10 +6,9 @@ to retrieve values from the config files.
 __author__ = "Nikolai Romashchenko"
 __license__ = "MIT"
 
-
 from enum import Enum
 from typing import Any, Dict
-from pewo.software import PlacementSoftware, AlignmentSoftware, CustomScripts
+from pewo.software import PlacementSoftware, AlignmentSoftware, CustomScripts, DamageSoftware
 
 
 class Mode(Enum):
@@ -33,7 +32,8 @@ def is_supported(software: Any) -> bool:
     """
     return type(software) == PlacementSoftware or \
            type(software) == AlignmentSoftware or \
-           type(software) == CustomScripts
+           type(software) == CustomScripts or\
+           type(software) == DamageSoftware
 
 
 def software_tested(config: Dict, software: PlacementSoftware) -> bool:
@@ -50,7 +50,9 @@ def get_mode(config: Dict) -> Mode:
         assert mode_name in mode_dict, f"Wrong mode value: {mode_name}"
         return mode_dict[mode_name]
 
-    raise RuntimeError(f"PEWO mode not specified in the config file. See config.yaml for details")
+    raise RuntimeError(
+        f"PEWO mode not specified in the config file. See config.yaml for details"
+    )
 
 
 def query_user(config: Dict) -> bool:

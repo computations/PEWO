@@ -57,6 +57,8 @@ include:
     "rules/op/operate_nodedistance.smk"
 include:
     "rules/op/operate_plots.smk"
+include:
+    "rules/op/operate_entropy.smk"
 
 
 rule all:

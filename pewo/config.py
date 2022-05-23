@@ -17,6 +17,28 @@ class Mode(Enum):
     RESOURCES = 2
 
 
+class DamageMode(Enum):
+    NONE = 0,
+    PREALIGN = 1,
+    POSTALIGN = 2,
+    UNDEFINED = 3
+
+
+def get_damage_enabled(config: Dict) -> bool:
+    dm = get_damage_mode(config)
+    return dm == DamageMode.PREALIGN or dm == DamageMode.POSTALIGN
+
+
+def get_damage_mode(config: Dict) -> DamageMode:
+    if not 'damage_mode' in config:
+        return DamageMode.NONE
+    if config['damage_mode'].lower() == 'prealign':
+        return DamageMode.PREALIGN
+    if config['damage_mode'].lower() == 'POSTALIGN':
+        return DamageMode.POSTALIGN
+    return DamageMode.UNDEFINED
+
+
 def get_work_dir(config: Dict) -> str:
     """
     Returns working directory path. This is the root directory of PEWO output.

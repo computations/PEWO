@@ -102,7 +102,7 @@ def get_name_prefix(config: Dict) -> str:
         config) == cfg.Mode.LIKELIHOOD else "pruning"
 
 
-def get_common_queryname_template(config: Dict) -> str:
+def get_base_queryname_template(config: Dict) -> str:
     """
     Each placement query has a template name based on two type of inputs:
     1) common arguments: tree and query sequences -- independent of software
@@ -115,6 +115,19 @@ def get_common_queryname_template(config: Dict) -> str:
     # For generated queries take the pruning and read length as an output template name.
     # For user queries take query file name as a template
     return "{" + get_name_prefix(config) + "}_r{length}"
+
+
+def get_common_queryname_template(config: Dict) -> str:
+    base = get_base_queryname_template(config)
+
+    if cfg.get_damage_enabled(config):
+        base += get_damage_queryname_template()
+
+    return base
+
+
+def get_damage_queryname_template() -> str:
+    return "_nf{nick_freq}_o{overhang}_ss{single_strand}_ds{double_strand}"
 
 
 def get_common_template_args(config: Dict) -> Dict[str, Any]:
@@ -135,10 +148,22 @@ def get_common_template_args(config: Dict) -> Dict[str, Any]:
             "query": fasta.get_sequence_ids(config["query_user"])
         }
     else:
-        return {
+        template_args = {
             "pruning": range(config["pruning_count"]),
             "length": config["read_length"]
         }
+
+        if cfg.get_damage_enabled(config):
+            template_args["nick_freq"] = config["config_pygargammel"][
+                "nick-freq"]
+            template_args["overhang"] = config["config_pygargammel"][
+                "overhang-parameter"]
+            template_args["single_strand"] =\
+                config["config_pygargammel"]["single-strand-deamination-parameter"]
+            template_args["double_strand"] =\
+                config["config_pygargammel"]["double-strand-deamination-parameter"]
+
+        return template_args
 
 
 def get_queryname_template(config: Dict, software: PlacementSoftware,
@@ -155,8 +180,10 @@ def get_queryname_template(config: Dict, software: PlacementSoftware,
     """
     _check_software(software)
 
+    return_string = None
+
     if software == PlacementSoftware.EPA:
-        return get_common_queryname_template(config) + "_g{g}"
+        return_string = get_common_queryname_template(config) + "_g{g}"
     elif software == PlacementSoftware.EPANG:
         # Output template depends on the heuristic enabled.
         # Get the heuristic
@@ -165,21 +192,30 @@ def get_queryname_template(config: Dict, software: PlacementSoftware,
         assert heuristic and heuristic in valid_heuristics, f"{heuristic} is not a valid heuristic."
 
         if heuristic == "h1":
-            return get_common_queryname_template(config) + "_h1_g{g}"
+            return_string = get_common_queryname_template(config) + "_h1_g{g}"
         elif heuristic == "h2":
-            return get_common_queryname_template(config) + "_h2_bigg{bigg}"
+            return_string = get_common_queryname_template(
+                config) + "_h2_bigg{bigg}"
         elif heuristic in ("h3", "h4"):
-            return get_common_queryname_template(config) + "_" + heuristic
+            return_string = get_common_queryname_template(
+                config) + "_" + heuristic
     elif software == PlacementSoftware.PPLACER:
-        return get_common_queryname_template(config) + "_ms{ms}_sb{sb}_mp{mp}"
+        return_string = get_common_queryname_template(
+            config) + "_ms{ms}_sb{sb}_mp{mp}"
     elif software == PlacementSoftware.APPLES:
-        return get_common_queryname_template(config) + "_meth{meth}_crit{crit}"
+        return_string = get_common_queryname_template(
+            config) + "_meth{meth}_crit{crit}"
     elif software == PlacementSoftware.RAPPAS:
-        return get_common_queryname_template(
+        return_string = get_common_queryname_template(
             config) + "_k{k}_o{o}_red{red}_ar{ar}"
     elif software == PlacementSoftware.APPSPAM:
-        return get_common_queryname_template(
+        return_string = get_common_queryname_template(
             config) + "_mode{mode}_w{w}_pattern{pattern}"
+
+    if cfg.get_damage_enabled(config):
+        return_string += get_damage_queryname_template()
+
+    return return_string
 
 
 def get_output_template_args(config: Dict, software: PlacementSoftware,
@@ -235,6 +271,7 @@ def get_output_template_args(config: Dict, software: PlacementSoftware,
         template_args["pattern"] = config["config_appspam"]["pattern"]
     else:
         raise RuntimeError("Unsupported software: " + software.value)
+
     return template_args
 
 

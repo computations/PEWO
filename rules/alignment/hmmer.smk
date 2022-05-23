@@ -10,7 +10,7 @@ import os
 import pewo.config as cfg
 from pewo.software import AlignmentSoftware, CustomScripts, DamageSoftware
 from pewo.templates import get_software_dir, get_experiment_log_dir_template, \
-    get_common_queryname_template, get_benchmark_template, get_common_template_args
+    get_common_queryname_template, get_base_queryname_template, get_benchmark_template, get_common_template_args
 
 
 _work_dir = cfg.get_work_dir(config)
@@ -24,6 +24,14 @@ _hmmer_benchmark_align_template = get_benchmark_template(config, AlignmentSoftwa
 hmmer_benchmark_templates = [_hmmer_benchmark_align_template]
 hmmer_benchmark_template_args = [get_common_template_args(config)]
 
+def get_hmm_align_query_path(config):
+    if cfg.get_damage_mode(config) == cfg.DamageMode.PREALIGN:
+        return os.path.join(_work_dir,
+                             "D",
+                             get_common_queryname_template(config) + ".fasta")
+
+    return os.path.join(_work_dir, "R",
+                         get_common_queryname_template(config) + ".fasta")
 
 rule hmm_build:
     """
@@ -52,13 +60,13 @@ rule hmm_align:
     input:
         hmm = os.path.join(_alignment_dir, "{pruning}.hmm"),
         alignment = os.path.join(_work_dir, "A", "{pruning}.align"),
-        query = os.path.join(_work_dir,
-                             "R",
-                             get_common_queryname_template(config) + ".fasta")
+        query = get_hmm_align_query_path(config)
+
     output:
         psiblast = os.path.join(_alignment_dir,
-                                "{pruning}",
-                                get_common_queryname_template(config) + ".psiblast")
+                            "{pruning}",
+                            get_common_queryname_template(config) + ".psiblast")
+
     version:
         "1.0"
     log:
@@ -105,7 +113,7 @@ rule split_alignment:
                              get_common_queryname_template(config) + ".fasta"),
         reads = os.path.join(_work_dir,
                             "R",
-                             get_common_queryname_template(config) + ".fasta"),
+                             get_base_queryname_template(config) + ".fasta"),
     output:
           queries = os.path.join(_alignment_dir,
                        "{pruning}",

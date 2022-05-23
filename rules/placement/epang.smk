@@ -100,12 +100,13 @@ def _make_epang_command(**kwargs) -> str:
 
 
 def _get_epang_input_reads(config) -> str:
-    # return os.path.join(_working_dir, "A", "{pruning}" + ".align")
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_refs")
 
 
 def _get_epang_input_queries(config) -> str:
-    return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
+    if cfg.get_damage_mode == cfg.DamageMode.POSTALIGN:
+        return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
+    return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_queries")
 
 
 def _get_epang_input_tree() -> str:

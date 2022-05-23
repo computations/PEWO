@@ -47,6 +47,29 @@ def get_rappas_input_reads(pruning):
     all read lengths are passed in a single RAPPAS execution.
     Read lengths can not be wildcards and must be set manually
     """
+    if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
+        output_dir = _damage_dir
+    else:
+        output_dir = os.path.join(_working_dir, "R")
+
+    # one read per fasta
+    if cfg.get_mode(config) == cfg.Mode.LIKELIHOOD:
+        return [os.path.join(output_dir, "{query}_r0.fasta")]
+    # multiple reads per fasta
+    else:
+        # FIXME:
+        # This is a dependency on pewo.templates.get_common_queryname_template result.
+        # Look for a decent way to get rid of it.
+        if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
+            return [os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")]
+        return [os.path.join(output_dir, pruning + "_r" + str(l) + ".fasta") for l in config["read_length"]]
+
+def get_rappas_input_reads_damaged(pruning):
+    """
+    Creates a list of input reads files. For generated reads from a pruning,
+    all read lengths are passed in a single RAPPAS execution.
+    Read lengths can not be wildcards and must be set manually
+    """
     #output_dir = os.path.join(_working_dir, "R")
     output_dir = _damage_dir
 
@@ -121,5 +144,5 @@ rule db_build_in_ram_rappas:
             for length in config["read_length"]:
                 shell(
                     "mv {params.workdir}/placements_{wildcards.pruning}_r" + str(length) + ".fasta.jplace "
-                    "{params.workdir}/{wildcards.pruning}_r" + str(length) + "_k{wildcards.k}_o{wildcards.o}_red{wildcards.red}_ar{wildcards.ar}_rappas.jplace "
+                    "{output}"
                 )

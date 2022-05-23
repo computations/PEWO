@@ -13,7 +13,7 @@ from typing import Dict
 import pewo.config as cfg
 from pewo.software import PlacementSoftware, AlignmentSoftware, DamageSoftware
 from pewo.templates import get_experiment_dir_template, get_software_dir, get_common_queryname_template, \
-    get_output_template, get_log_template, get_benchmark_template, get_output_template_args
+    get_output_template, get_log_template, get_damage_queryname_template, get_benchmark_template, get_output_template_args
 
 
 _working_dir = cfg.get_work_dir(config)
@@ -36,8 +36,19 @@ pplacer_benchmark_template_args = [get_output_template_args(config, PlacementSof
 
 def _get_pplacer_refpkg_template(config: Dict) -> str:
     return os.path.join(get_software_dir(config, PlacementSoftware.PPLACER),
-                        "{pruning}", "{pruning}_r{length}_refpkg")
+                        "{pruning}", 
+                        get_common_queryname_template(config)
+                        + "_refpkg")
 
+
+def _get_pplacer_align(config):
+    if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
+        return os.path.join(_damage_dir, 
+                            "{pruning}", 
+                            get_common_queryname_template(config) + ".fasta_refs")
+    return os.path.join(_alignment_dir, 
+                        "{pruning}", 
+                        get_common_queryname_template(config) + ".fasta")
 
 rule build_pplacer:
     """
@@ -45,14 +56,13 @@ rule build_pplacer:
     Model parameters are loaded in pplacer via the 'info' file, the output of raxml optimisation
     """
     input:
-        #a = os.path.join(_working_dir, "A", "{pruning}.align"),
         a = os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_refs"),
         t = os.path.join(_working_dir, "T", "{pruning}.tree"),
         s = os.path.join(_working_dir, "T", "{pruning}_optimised.info")
     output:
         directory(_get_pplacer_refpkg_template(config))
     log:
-        os.path.join(_working_dir, "logs", "taxtastic", "{pruning}_r{length}.log")
+        os.path.join(_working_dir, "logs", "taxtastic", get_common_queryname_template(config) + ".log" )
     version: "1.00"
     params:
         refpkg_dir = _get_pplacer_refpkg_template(config)
@@ -67,9 +77,7 @@ rule placement_pplacer:
     which required the addition of the explicit 'cd'
     """
     input:
-        alignment = os.path.join(_damage_dir,
-                                 "{pruning}",
-                                 get_common_queryname_template(config) + ".fasta"),
+        alignment = _get_pplacer_align(config),
         pkg = _get_pplacer_refpkg_template(config)
     output:
         jplace = get_output_template(config, PlacementSoftware.PPLACER, "jplace")

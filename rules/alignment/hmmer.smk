@@ -31,7 +31,7 @@ def get_hmm_align_query_path(config):
                              get_common_queryname_template(config) + ".fasta")
 
     return os.path.join(_work_dir, "R",
-                         get_common_queryname_template(config) + ".fasta")
+                         get_base_queryname_template(config) + ".fasta")
 
 rule hmm_build:
     """

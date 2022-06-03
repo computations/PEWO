@@ -34,7 +34,7 @@ def get_damage_mode(config: Dict) -> DamageMode:
         return DamageMode.NONE
     if config['damage_mode'].lower() == 'prealign':
         return DamageMode.PREALIGN
-    if config['damage_mode'].lower() == 'POSTALIGN':
+    if config['damage_mode'].lower() == 'postalign':
         return DamageMode.POSTALIGN
     return DamageMode.UNDEFINED
 

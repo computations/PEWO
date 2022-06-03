@@ -45,7 +45,7 @@ def _get_pplacer_align(config):
     if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
         return os.path.join(_damage_dir, 
                             "{pruning}", 
-                            get_common_queryname_template(config) + ".fasta_refs")
+                            get_common_queryname_template(config) + ".fasta")
     return os.path.join(_alignment_dir, 
                         "{pruning}", 
                         get_common_queryname_template(config) + ".fasta")

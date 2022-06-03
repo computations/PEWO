@@ -114,7 +114,7 @@ def get_base_queryname_template(config: Dict) -> str:
 
     # For generated queries take the pruning and read length as an output template name.
     # For user queries take query file name as a template
-    return "{" + get_name_prefix(config) + "}_r{length}"
+    return "{" +  get_name_prefix(config) + "}_r{length}"
 
 
 def get_common_queryname_template(config: Dict) -> str:
@@ -211,9 +211,6 @@ def get_queryname_template(config: Dict, software: PlacementSoftware,
     elif software == PlacementSoftware.APPSPAM:
         return_string = get_common_queryname_template(
             config) + "_mode{mode}_w{w}_pattern{pattern}"
-
-    if cfg.get_damage_enabled(config):
-        return_string += get_damage_queryname_template()
 
     return return_string
 

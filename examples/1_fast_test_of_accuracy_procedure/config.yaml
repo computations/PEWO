@@ -19,7 +19,7 @@ states: 0
 test_soft: [rappas,epang,pplacer]
 
 # read lengths to test
-read_length: [150]
+read_length: [100000]
 
 
 ## IF "ACCURACY" IS EVALUATED
@@ -274,3 +274,19 @@ phylo_params:
 
 #if 1, prints some debug lines on top of snakemake logs
 debug: 0
+
+damage_mode: POSTALIGN
+
+config_pygargammel:
+  nick-freq: [0.024]
+  overhang-parameter: [0.36]
+  single-strand-deamination-parameter: [0.68]
+  double-strand-deamination-parameter: [0.0097]
+  min-fragment-length: 15
+
+  #config_pygargammel:
+  #  nick-freq: [0.0, 0.004, 0.014, 0.024, 0.034]
+  #  overhang-parameter: [0.0, 0.06, 0.16, 0.26, 0.36, 0.46]
+  #  single-strand-deamination-parameter: [0.0, 0.28, 0.48, 0.68, 0.88]
+  #  double-strand-deamination-parameter: [0.0, 0.0007, 0.0097, 0.0197]
+  #  min-fragment-length: 15

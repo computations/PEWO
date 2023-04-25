@@ -114,7 +114,11 @@ rule db_build_in_ram_rappas:
         querystring = lambda wildcards, input: ",".join(input.r),
         maxp = config["maxplacements"],
         minlwr = config["minlwr"],
-        arbin = lambda wildcards: get_ar_binary(config, wildcards.ar)
+        arbin = lambda wildcards: get_ar_binary(config, wildcards.ar),
+        nick_freq = config["config_pygargammel"]["nick-freq"],
+        overhang = config["config_pygargammel"]["overhang-parameter"],
+        single_strand = config["config_pygargammel"]["single-strand-deamination-parameter"],
+        double_strand = config["config_pygargammel"]["double-strand-deamination-parameter"]
     run:
         shell(
             "java -Xms2G -Xmx" + str(config["config_rappas"]["memory"]) + "G -jar $(which RAPPAS.jar) -p b "
@@ -143,6 +147,6 @@ rule db_build_in_ram_rappas:
         else:
             for length in config["read_length"]:
                 shell(
-                    "mv {params.workdir}/placements_{wildcards.pruning}_r" + str(length) + ".fasta.jplace "
-                    "{output}"
+                    "mv {params.workdir}/placements_{wildcards.pruning}_r" + str(length) + "_nf{wildcards.nick_freq}_ov{wildcards.overhang}_ss{wildcards.single_strand}_ds{wildcards.double_strand}.fasta.jplace "
+                    "{params.workdir}/{wildcards.pruning}_r" + str(length) + "_nf{wildcards.nick_freq}_ov{wildcards.overhang}_ss{wildcards.single_strand}_ds{wildcards.double_strand}_k{wildcards.k}_o{wildcards.o}_red{wildcards.red}_ar{wildcards.ar}_rappas.jplace "
                 )

@@ -114,7 +114,7 @@ def get_base_queryname_template(config: Dict) -> str:
 
     # For generated queries take the pruning and read length as an output template name.
     # For user queries take query file name as a template
-    return "{" +  get_name_prefix(config) + "}_r{length}"
+    return "{" + get_name_prefix(config) + "}_r{length}"
 
 
 def get_common_queryname_template(config: Dict) -> str:
@@ -127,7 +127,7 @@ def get_common_queryname_template(config: Dict) -> str:
 
 
 def get_damage_queryname_template() -> str:
-    return "_nf{nick_freq}_o{overhang}_ss{single_strand}_ds{double_strand}"
+    return "_nf{nick_freq}_ov{overhang}_ss{single_strand}_ds{double_strand}"
 
 
 def get_common_template_args(config: Dict) -> Dict[str, Any]:

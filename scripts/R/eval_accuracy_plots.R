@@ -18,15 +18,17 @@ library(Cairo)
 # often, so this is manageable.
 #################################################
 
-epa<-c("g")
-epang_h1<-c("g")
-epang_h2<-c("bigg")
-epang_h3<-c()
-epang_h4<-c()
-pplacer<-c("ms","sb","mp")
-rappas<-c("k","o","red","ar")
-apples<-c("meth","crit")
-appspam<-c("mode","w","pattern")
+damage_params<-c("nf", "ov", "ss", "ds")
+
+epa<-append(c("g"), damage_params)
+epang_h1<-append(c("g"), damage_params)
+epang_h2<-append(c("bigg"), damage_params)
+epang_h3<-append(c(), damage_params)
+epang_h4<-append(c(), damage_params)
+pplacer<-append(c("ms","sb","mp"), damage_params)
+rappas<-append(c("k","o","red","ar"), damage_params)
+apples<-append(c("meth","crit"), damage_params)
+appspam<-append(c("mode","w","pattern"), damage_params)
 
 soft_params<-list(epa=epa,epang_h1=epang_h1,epang_h2=epang_h2,epang_h3=epang_h3,epang_h4=epang_h4,pplacer=pplacer,rappas=rappas,apples=apples,appspam=appspam)
 
@@ -153,7 +155,7 @@ for ( i in 1:length(soft_analyzed) ) {
 		}
 	}
 	svg_width<-2+(0.7*length(unique(alltables[[i]][[params[1]]])) * columns)
-	svg_height<-1+( 0.7* length(unique(alltables[[i]][[params[2]]])) )
+	svg_height<-3+( 0.7* length(unique(alltables[[i]][[params[2]]])) )
 	CairoSVG(file =paste(workdir,"/summary_plot_ND_",softname,".svg", sep=""),width=svg_width,height=svg_height)
 	print(g)
 	dev.off()

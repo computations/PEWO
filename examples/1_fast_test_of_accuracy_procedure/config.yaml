@@ -278,10 +278,10 @@ debug: 0
 damage_mode: POSTALIGN
 
 config_pygargammel:
-  nick-freq: [0.024]
-  overhang-parameter: [0.36]
-  single-strand-deamination-parameter: [0.68]
-  double-strand-deamination-parameter: [0.0097]
+  nick-freq: [0.024, 0.03]
+  overhang-parameter: [0.36, 0.4]
+  single-strand-deamination-parameter: [0.68, 0.7]
+  double-strand-deamination-parameter: [0.0097, 0.01]
   min-fragment-length: 15
 
   #config_pygargammel:

@@ -29,6 +29,8 @@ def _get_apples_input_reads(config) -> str:
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_refs")
 
 def _get_apples_input_queries(config) -> str:
+    if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
+        return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_queries")
 
 
@@ -50,5 +52,5 @@ rule placement_apples:
     version: "1.0"
     shell:
         """
-        run_apples.py -s {input.r} -q {input.q} -t {input.t} -T 1 -m {wildcards.meth} -c {wildcards.crit} -o {output.jplace}
+        run_apples.py -s {input.r} -q {input.q} -t {input.t} -T 1 -m {wildcards.meth} -c {wildcards.crit} -o {output.jplace} &> {log}
         """

@@ -93,7 +93,8 @@ def build_accuracy_workflow() -> List[str]:
     expected_node_distance_reports = get_accuracy_end_plots()
     jplace_entropy_reports = get_entropy_csv_files()
 
-    return list(itertools.chain(placements, csv, node_distance_reports, expected_node_distance_reports, jplace_entropy_reports))
+    #return list(itertools.chain(placements, csv, node_distance_reports, expected_node_distance_reports, jplace_entropy_reports))
+    return list(itertools.chain(placements, csv, node_distance_reports, expected_node_distance_reports))
 
 def get_entropy_csv_files() -> List[str]:
     jplace_files = get_jplace_outputs(config)

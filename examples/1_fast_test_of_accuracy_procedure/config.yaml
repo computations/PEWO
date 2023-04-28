@@ -16,11 +16,10 @@ workdir: /path/to/examples/1_fast_test_of_accuracy_procedure/run
 states: 0
 
 # which software to test, at least one of : epa, epang, pplacer, rappas, apples
-test_soft: [rappas,epang,pplacer]
+test_soft: [rappas, epang, pplacer, apples]
 
 # read lengths to test
 read_length: [100000]
-
 
 ## IF "ACCURACY" IS EVALUATED
 #############################
@@ -28,8 +27,7 @@ read_length: [100000]
 ### this section matters only when you run the "eval_accuracy.smk" workflow
 
 # number of random prunings to compute
-pruning_count: 2
-
+pruning_count: 1
 
 ## IF "RESOURCES" ARE EVALUATED
 ##############################
@@ -47,9 +45,6 @@ query_type: user
 # MUST be an absolute path (some software do not accept relative path).
 query_user: none
 
-
-
-
 ########################################################################################################################
 # PER SOFTWARE CONFIGURATION
 ########################################################################################################################
@@ -61,7 +56,6 @@ query_user: none
 ###############################
 
 config_epa:
-
   #EPA is alignment-based and uses a ML evaluation of the placement.
   #it uses a 2-step heuristic:
   # 1) rapid ML evaluation after insertion in the midpoint of each branch
@@ -76,11 +70,10 @@ config_epa:
 ###############################
 
 config_pplacer:
-
   #PPLACER is alignment-based and uses a ML evaluation of the placement.
   #it uses a 2-step heuristic similar to EPA but called the "baseball" heuristic
   #(Matsen et al, 2012 ; doi: 10.1186/1471-2105-11-538)
-  
+
   max-strikes: [6]
   strike-box: [3]
   max-pitches: [40]
@@ -92,7 +85,6 @@ config_pplacer:
 ###############################
 
 config_epang:
-
   #EPA-NG is alignment-based and uses a ML evaluation of the placement.
   #different heuristics that can be tested:
   # h1: program default, heuristic developed for EPA-ng, fastest heuristic
@@ -104,14 +96,14 @@ config_epang:
 
   h1:
     #value in ]0,1], value close to 1 recommended by authors
-    g: [0.99999]  
+    g: [0.99999]
   h2:
     #values in ]0,1], higher values increase accuracy but analysis is slower
-    G: [0.1]       
+    G: [0.1]
   h3:
-    options: none       #reserved if any option appears in future versions
+    options: none #reserved if any option appears in future versions
   h4:
-    options: none       #reserved if any option appears in future versions
+    options: none #reserved if any option appears in future versions
 
   #pre-masking, 1=yes, 0=no
   premask: 1
@@ -120,7 +112,6 @@ config_epang:
 ###############################
 
 config_rappas:
-
   # RAPPAS uses an alignment-free approach which is completely different from the alignment-based apporaches
   # of EPA, EPA-ng and PPlacer. It does not use a "heuristic" per see to accelerate placements,
   # but a 2-step approach (DB build, then placements) based on the phylo-kmer idea.
@@ -173,7 +164,6 @@ config_rappas:
 ###############################
 
 config_apples:
-
   #apples placements are based on distance computations between the query and the reference tree
   #it allows different "methods" to compute these distance and different "criteria" to selection the best placement.
   #currenlt, PEWO uses the distances computed from the query to reference alignments, using the same alignments
@@ -202,8 +192,7 @@ config_apples:
 ###############################
 
 config_appspam:
-
-  #appspam calculates phylogenetic distances between all query and reference distances based on 
+  #appspam calculates phylogenetic distances between all query and reference distances based on
   #filtered spaced word matches. The placement position is determined with different heuristics (mode).
   #(Blanke, Morgenstern, 2020 ; https://doi.org/10.1101/2020.10.19.344986)
 
@@ -221,7 +210,7 @@ config_appspam:
   w: [8, 12]
 
   #Number of pattern from which spaced words are generated.
-  #At the moment 1 is heavily recommended. 
+  #At the moment 1 is heavily recommended.
   pattern: [1]
 
 ########################################################################################################################
@@ -250,7 +239,6 @@ maxplacements: 7
 #  value in ]0,1]
 minlwr: 0.01
 
-
 ########################################################################################################################
 # EVOLUTIONARY MODEL
 ########################################################################################################################
@@ -267,7 +255,6 @@ phylo_params:
   model: "GTR+G"
   categories: 4
 
-
 ########################################################################################################################
 # DEBUG OPTIONS
 ########################################################################################################################
@@ -278,15 +265,19 @@ debug: 0
 damage_mode: POSTALIGN
 
 config_pygargammel:
-  nick-freq: [0.024, 0.03]
-  overhang-parameter: [0.36, 0.4]
-  single-strand-deamination-parameter: [0.68, 0.7]
-  double-strand-deamination-parameter: [0.0097, 0.01]
+  nick-freq: [0.02]
+  overhang-parameter: [0.2]
+  single-strand-deamination-parameter: [0.6]
+  double-strand-deamination-parameter: [0.01]
   min-fragment-length: 15
+  max-fragments: 100
+  min-fragments: 1
 
   #config_pygargammel:
-  #  nick-freq: [0.0, 0.004, 0.014, 0.024, 0.034]
-  #  overhang-parameter: [0.0, 0.06, 0.16, 0.26, 0.36, 0.46]
-  #  single-strand-deamination-parameter: [0.0, 0.28, 0.48, 0.68, 0.88]
-  #  double-strand-deamination-parameter: [0.0, 0.0007, 0.0097, 0.0197]
+  #  nick-freq: [0.00, 0.01, 0.02, 0.025, 0.030, 0.35, 0.04, 0.1]
+  #  overhang-parameter: [0.01, 0.1, 0.2, 0.3, 0.35, 0.4, 0.5, 1.00]
+  #  single-strand-deamination-parameter: [0.0, 0.2, 0.4, 0.6, 0.65, 0.7, 0.8, 1.00]
+  #  double-strand-deamination-parameter: [0.0, 0.005, 0.01, 0.015, 0.02, 0.03, 0.04, 0.5, 1.00]
   #  min-fragment-length: 15
+  #  max-fragments: 100
+  #  min-fragments: 1

@@ -24,12 +24,16 @@ rule damage_reads_post_alignment:
     params:
         min_fragment_length = 
             config["config_pygargammel"]["min-fragment-length"],
+        min_fragments= 
+            config["config_pygargammel"]["min-fragments"],
+        max_fragments= 
+            config["config_pygargammel"]["max-fragments"],
 
     shell:
         "pygargammel --align " +
                     "--format-taxa-name " +
-                    "--max-fragments 2 " +
-                    "--min-fragments 2 " +
+                    "--max-fragments {params.min_fragments} " +
+                    "--min-fragments {params.max_fragments} " +
                     "--min-length {params.min_fragment_length} " +
                     "--fasta {input.sequences} " +
                     "--nick-freq {wildcards.nick_freq} " +
@@ -53,11 +57,15 @@ rule damage_reads_pre_alignment:
     params:
         min_fragment_length = 
             config["config_pygargammel"]["min-fragment-length"],
+        min_fragments= 
+            config["config_pygargammel"]["min-fragments"],
+        max_fragments= 
+            config["config_pygargammel"]["max-fragments"],
 
     shell:
         "pygargammel --align " +
-                    "--max-fragments 2 " +
-                    "--min-fragments 2 " +
+                    "--max-fragments {params.min_fragments} " +
+                    "--min-fragments {params.max_fragments} " +
                     "--min-length {params.min_fragment_length} " +
                     "--fasta {input.sequences} " +
                     "--nick-freq {wildcards.nick_freq} " +

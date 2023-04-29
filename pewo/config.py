@@ -21,12 +21,13 @@ class DamageMode(Enum):
     NONE = 0,
     PREALIGN = 1,
     POSTALIGN = 2,
-    UNDEFINED = 3
+    NOALIGN = 3,
+    UNDEFINED = 4
 
 
 def get_damage_enabled(config: Dict) -> bool:
     dm = get_damage_mode(config)
-    return dm == DamageMode.PREALIGN or dm == DamageMode.POSTALIGN
+    return dm == DamageMode.PREALIGN or dm == DamageMode.POSTALIGN or dm == DamageMode.NOALIGN
 
 
 def get_damage_mode(config: Dict) -> DamageMode:
@@ -36,6 +37,8 @@ def get_damage_mode(config: Dict) -> DamageMode:
         return DamageMode.PREALIGN
     if config['damage_mode'].lower() == 'postalign':
         return DamageMode.POSTALIGN
+    if config['damage_mode'].lower() == 'noalign':
+        return DamageMode.NOALIGN
     return DamageMode.UNDEFINED
 
 

@@ -106,6 +106,8 @@ def _get_epang_input_reads(config) -> str:
 def _get_epang_input_queries(config) -> str:
     if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
         return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
+    if cfg.get_damage_mode(config) == cfg.DamageMode.NOALIGN:
+        return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".noalign.fasta")
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_queries")
 
 

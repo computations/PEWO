@@ -17,7 +17,6 @@ from pewo.templates import get_experiment_dir_template, get_software_dir, get_co
 
 
 _working_dir = cfg.get_work_dir(config)
-_working_dir = cfg.get_work_dir(config)
 _pplacer_experiment_dir = get_experiment_dir_template(config, PlacementSoftware.PPLACER)
 
 # FIXME:
@@ -41,6 +40,12 @@ def _get_pplacer_refpkg_template(config: Dict) -> str:
                         + "_refpkg")
 
 
+def _get_build_pplacer_refs(config):
+    if cfg.get_damage_mode(config) == cfg.DamageMode.NOALIGN:
+        return os.path.join(_working_dir, "G", "{pruning}.fasta"),
+
+    return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_refs"),
+
 def _get_pplacer_align(config):
     if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
         return os.path.join(_damage_dir, 
@@ -56,7 +61,7 @@ rule build_pplacer:
     Model parameters are loaded in pplacer via the 'info' file, the output of raxml optimisation
     """
     input:
-        a = os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_refs"),
+        a = _get_build_pplacer_refs(config),
         t = os.path.join(_working_dir, "T", "{pruning}.tree"),
         s = os.path.join(_working_dir, "T", "{pruning}_optimised.info")
     output:

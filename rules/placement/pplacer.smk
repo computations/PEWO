@@ -12,7 +12,7 @@ import os
 from typing import Dict
 import pewo.config as cfg
 from pewo.software import PlacementSoftware, AlignmentSoftware, DamageSoftware
-from pewo.templates import get_experiment_dir_template, get_software_dir, get_common_queryname_template, \
+from pewo.templates import get_experiment_dir_template, get_software_dir, get_common_queryname_template, get_common_queryname_template_with_damage,\
     get_output_template, get_log_template, get_damage_queryname_template, get_benchmark_template, get_output_template_args
 
 
@@ -50,7 +50,7 @@ def _get_pplacer_align(config):
     if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
         return os.path.join(_damage_dir, 
                             "{pruning}", 
-                            get_common_queryname_template(config) + ".fasta")
+                            get_common_queryname_template_with_damage(config) + ".fasta")
     return os.path.join(_alignment_dir, 
                         "{pruning}", 
                         get_common_queryname_template(config) + ".fasta")

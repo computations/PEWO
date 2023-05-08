@@ -78,7 +78,7 @@ def get_experiment_dir_template(config: Dict, software: PlacementSoftware,
     elif software == PlacementSoftware.APPSPAM:
         return os.path.join(software_dir, input_set_dir_template,
                             "mode{mode}_w{w}_pattern{pattern}")
-    elif software == DamageSoftware.PYGARGAMMEL:
+    if cfg.get_damage_enabled(config):
         return os.path.join(
             software_dir, input_set_dir_template,
             "nf{nick_frequency}_ol{overhang_length}_ds{double_deamination_rate}_ss{single_deamination_rate}"
@@ -118,6 +118,12 @@ def get_base_queryname_template(config: Dict) -> str:
 
 
 def get_common_queryname_template(config: Dict) -> str:
+    base = get_base_queryname_template(config)
+
+    return base
+
+
+def get_common_queryname_template_with_damage(config: Dict) -> str:
     base = get_base_queryname_template(config)
 
     if cfg.get_damage_enabled(config):
@@ -180,10 +186,13 @@ def get_queryname_template(config: Dict, software: PlacementSoftware,
     """
     _check_software(software)
 
-    return_string = None
+    if cfg.get_damage_enabled(config):
+        return_string = get_common_queryname_template_with_damage(config)
+    else:
+        return_string = get_common_queryname_template(config)
 
     if software == PlacementSoftware.EPA:
-        return_string = get_common_queryname_template(config) + "_g{g}"
+        return_string += "_g{g}"
     elif software == PlacementSoftware.EPANG:
         # Output template depends on the heuristic enabled.
         # Get the heuristic
@@ -192,25 +201,19 @@ def get_queryname_template(config: Dict, software: PlacementSoftware,
         assert heuristic and heuristic in valid_heuristics, f"{heuristic} is not a valid heuristic."
 
         if heuristic == "h1":
-            return_string = get_common_queryname_template(config) + "_h1_g{g}"
+            return_string += "_h1_g{g}"
         elif heuristic == "h2":
-            return_string = get_common_queryname_template(
-                config) + "_h2_bigg{bigg}"
+            return_string += "_h2_bigg{bigg}"
         elif heuristic in ("h3", "h4"):
-            return_string = get_common_queryname_template(
-                config) + "_" + heuristic
+            return_string += "_" + heuristic
     elif software == PlacementSoftware.PPLACER:
-        return_string = get_common_queryname_template(
-            config) + "_ms{ms}_sb{sb}_mp{mp}"
+        return_string += "_ms{ms}_sb{sb}_mp{mp}"
     elif software == PlacementSoftware.APPLES:
-        return_string = get_common_queryname_template(
-            config) + "_meth{meth}_crit{crit}"
+        return_string += "_meth{meth}_crit{crit}"
     elif software == PlacementSoftware.RAPPAS:
-        return_string = get_common_queryname_template(
-            config) + "_k{k}_o{o}_red{red}_ar{ar}"
+        return_string += "_k{k}_o{o}_red{red}_ar{ar}"
     elif software == PlacementSoftware.APPSPAM:
-        return_string = get_common_queryname_template(
-            config) + "_mode{mode}_w{w}_pattern{pattern}"
+        return_string += "_mode{mode}_w{w}_pattern{pattern}"
 
     return return_string
 

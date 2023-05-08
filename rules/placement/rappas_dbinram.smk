@@ -61,7 +61,8 @@ def get_rappas_input_reads(pruning):
         # This is a dependency on pewo.templates.get_common_queryname_template result.
         # Look for a decent way to get rid of it.
         if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
-            return [os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")]
+            return [os.path.join(_damage_dir, "{pruning}",
+                                 get_common_queryname_template_with_damage(config) + ".fasta")]
         return [os.path.join(output_dir, pruning + "_r" + str(l) + ".fasta") for l in config["read_length"]]
 
 def get_rappas_input_reads_damaged(pruning):

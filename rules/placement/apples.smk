@@ -10,7 +10,7 @@ import os
 import pewo.config as cfg
 from pewo.software import PlacementSoftware, AlignmentSoftware
 from pewo.templates import get_output_template, get_log_template, get_software_dir, \
-    get_common_queryname_template, get_benchmark_template, get_output_template_args
+    get_common_queryname_template, get_common_queryname_template_with_damage, get_benchmark_template, get_output_template_args
 
 
 _working_dir = cfg.get_work_dir(config)
@@ -30,7 +30,7 @@ def _get_apples_input_reads(config) -> str:
 
 def _get_apples_input_queries(config) -> str:
     if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
-        return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
+        return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template_with_damage(config) + ".fasta")
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_queries")
 
 

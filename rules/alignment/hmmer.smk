@@ -28,7 +28,7 @@ def get_hmm_align_query_path(config):
     if cfg.get_damage_mode(config) == cfg.DamageMode.PREALIGN:
         return os.path.join(_work_dir,
                              "D",
-                             get_common_queryname_template(config) + ".fasta")
+                             get_common_queryname_template_with_damage(config) + ".fasta")
 
     return os.path.join(_work_dir, "R",
                          get_base_queryname_template(config) + ".fasta")

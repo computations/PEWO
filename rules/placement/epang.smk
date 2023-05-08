@@ -12,7 +12,9 @@ import os
 import pewo.config as cfg
 from pewo.software import PlacementSoftware, AlignmentSoftware, DamageSoftware
 from pewo.templates import get_output_template, get_log_template, get_software_dir, \
-    get_common_queryname_template, get_experiment_dir_template, get_benchmark_template, get_output_template_args
+    get_common_queryname_template, get_common_queryname_template_with_damage,\
+    get_experiment_dir_template, get_benchmark_template,\
+    get_output_template_args, get_damage_queryname_template
 
 _working_dir = cfg.get_work_dir(config)
 _epang_soft_dir = get_software_dir(config, PlacementSoftware.EPANG)
@@ -49,6 +51,12 @@ epang_benchmark_template_args = [
     get_output_template_args(config, PlacementSoftware.EPANG, heuristic="h4")
 ]
 
+
+def _get_epang_tmpdir(config, heuristic: str) -> str:
+    return os.path.join(get_experiment_dir_template(config,
+                                                    PlacementSoftware.EPANG,
+                                       heuristic=heuristic),
+                        get_damage_queryname_template())
 
 def _make_epang_command(**kwargs) -> str:
     """
@@ -105,7 +113,8 @@ def _get_epang_input_reads(config) -> str:
 
 def _get_epang_input_queries(config) -> str:
     if cfg.get_damage_mode(config) == cfg.DamageMode.POSTALIGN:
-        return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".fasta")
+        return os.path.join(_damage_dir, "{pruning}",
+                            get_common_queryname_template_with_damage(config) + ".fasta")
     if cfg.get_damage_mode(config) == cfg.DamageMode.NOALIGN:
         return os.path.join(_damage_dir, "{pruning}", get_common_queryname_template(config) + ".noalign.fasta")
     return os.path.join(_alignment_dir, "{pruning}", get_common_queryname_template(config) + ".fasta_queries")
@@ -140,7 +149,7 @@ rule placement_epang_h1:
         repeat(_epang_h1_place_benchmark_template, config["repeats"])
     version: "1.0"
     params:
-        tmpdir=get_experiment_dir_template(config, PlacementSoftware.EPANG, heuristic="h1"),
+        tmpdir=_get_epang_tmpdir(config, "h1"),
           dir=os.path.join(_epang_soft_dir, "{pruning}", "h1"),
           maxp=config["maxplacements"],
           minlwr=config["minlwr"]
@@ -168,7 +177,7 @@ rule placement_epang_h2:
         repeat(_epang_h2_place_benchmark_template, config["repeats"])
     version: "1.0"
     params:
-        tmpdir=get_experiment_dir_template(config, PlacementSoftware.EPANG, heuristic="h2"),
+        tmpdir=_get_epang_tmpdir(config, "h2"),
           dir=os.path.join(_epang_soft_dir, "{pruning}", "h2"),
           maxp=config["maxplacements"],
           minlwr=config["minlwr"]
@@ -196,7 +205,7 @@ rule placement_epang_h3:
         repeat(_epang_h3_place_benchmark_template, config["repeats"])
     version: "1.0"
     params:
-        tmpdir=get_experiment_dir_template(config, PlacementSoftware.EPANG, heuristic="h3"),
+        tmpdir=_get_epang_tmpdir(config, "h3"),
           dir=os.path.join(_epang_soft_dir, "{pruning}", "h3"),
           maxp=config["maxplacements"],
           minlwr=config["minlwr"]
@@ -224,7 +233,7 @@ rule placement_epang_h4:
         repeat(_epang_h4_place_benchmark_template, config["repeats"])
     version: "1.0"
     params:
-        tmpdir=get_experiment_dir_template(config, PlacementSoftware.EPANG, heuristic="h4"),
+        tmpdir=_get_epang_tmpdir(config, "h4"),
           dir=os.path.join(_epang_soft_dir, "{pruning}", "h4"),
           maxp=config["maxplacements"],
           minlwr=config["minlwr"]

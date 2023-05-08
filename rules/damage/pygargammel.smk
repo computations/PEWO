@@ -29,12 +29,12 @@ rule damage_reads_post_alignment:
 
     output:
         damaged_sequences_filename = os.path.join(_damage_dir, "{pruning}",
-                                                  get_common_queryname_template(config)+
+                                                  get_common_queryname_template_with_damage(config)+
                                                   ".fasta")
 
     log:
         logfile = os.path.join(get_experiment_log_dir_template(config, DamageSoftware.PYGARGAMMEL),
-                     get_common_queryname_template(config) + ".log")
+                     get_common_queryname_template_with_damage(config) + ".log")
 
     params:
         min_fragment_length = 
@@ -52,35 +52,12 @@ rule damage_reads_pre_alignment:
         sequences = os.path.join(_work_dir, "R", get_base_queryname_template(config) + ".fasta")
 
     output:
-        damaged_sequences_filename = os.path.join(_work_dir, "D", get_common_queryname_template(config)+ ".fasta")
+        damaged_sequences_filename = os.path.join(_work_dir, "D",
+                                                  get_common_queryname_template_with_damage(config)+ ".fasta")
 
     log:
         logfile = os.path.join(get_experiment_log_dir_template(config, DamageSoftware.PYGARGAMMEL),
-                     get_common_queryname_template(config) + ".log")
-
-    params:
-        min_fragment_length = 
-            config["config_pygargammel"]["min-fragment-length"],
-        min_fragments= 
-            config["config_pygargammel"]["min-fragments"],
-        max_fragments= 
-            config["config_pygargammel"]["max-fragments"],
-
-    shell:
-        _build_pygargammel_command()
-
-rule damage_reads_no_alignment:
-    input:
-        sequences = os.path.join(_work_dir, "G", "{pruning}.fasta")
-
-    output:
-        damaged_sequences_filename = os.path.join(_damage_dir, "{pruning}",
-                                                  get_common_queryname_template(config)+
-                                                  ".noalign.fasta")
-
-    log:
-        logfile = os.path.join(get_experiment_log_dir_template(config, DamageSoftware.PYGARGAMMEL),
-                     get_common_queryname_template(config) + ".log")
+                     get_common_queryname_template_with_damage(config) + ".log")
 
     params:
         min_fragment_length = 
